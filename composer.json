@@ -1,0 +1,24 @@
+{
+	"name": "dashifen/router",
+	"description": "a PHP routing object",
+	"minimum-stability": "stable",
+	"type": "library",
+	"authors": [
+		{
+			"name": "David Dashifen Kees",
+			"email": "dashifen@dashifen.com",
+			"homepage": "https://dashifen.com",
+			"role": "developer"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Dashifen\\Router\\": "src/"
+		}
+	},
+	"require": {
+		"php": "^7.1",
+		"dashifen/request": "^1.0"
+	},
+	"license": "MIT"
+}
