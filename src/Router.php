@@ -36,16 +36,30 @@ class Router implements RouterInterface {
 		$this->path = $request->getServerVar("REQUEST_URI");
 		$this->collection = $collection;
 		$this->factory = $factory;
-		$this->setRoutes($routes);
+		$this->addRoutes($routes);
+	}
+	
+	/**
+	 * gets the action for this route.
+	 *
+	 * @return string
+	 * @throws RouterException
+	 */
+	public function route(): string {
+		if (is_null($route = $this->getRoute())) {
+			throw new RouterException("Unexpected route: $this->method;$this->path.");
+		}
+		
+		return $route->getAction();
 	}
 	
 	public function getRoutes(): array {
 		return $this->collection->getRoutes();
 	}
 	
-	public function setRoutes(array $routes): void {
+	public function addRoutes(array $routes): void {
 		foreach ($routes as $route) {
-			$this->setRoute($route);
+			$this->addRoute($route);
 		}
 	}
 	
@@ -65,7 +79,7 @@ class Router implements RouterInterface {
 		return $route;
 	}
 	
-	public function setRoute(array $route): void {
+	public function addRoute(array $route): void {
 		$this->collection->addRoute($this->factory->produceRoute($route));
 	}
 }

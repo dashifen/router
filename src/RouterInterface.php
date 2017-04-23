@@ -11,17 +11,14 @@ use Dashifen\Router\Route\RouteInterface;
  */
 interface RouterInterface {
 	/**
+	 * @return string
+	 */
+	public function route(): string;
+
+	/**
 	 * @return array
 	 */
 	public function getRoutes(): array;
-	
-	/**
-	 * @param array $routes
-	 *
-	 * @throws RouterException
-	 * @return void
-	 */
-	public function setRoutes(array $routes): void;
 	
 	/**
 	 * @return RouteInterface|null
@@ -29,9 +26,17 @@ interface RouterInterface {
 	public function getRoute(): ?RouteInterface;
 	
 	/**
+	 * @param array $routes
+	 *
+	 * @throws RouterException
+	 * @return void
+	 */
+	public function addRoutes(array $routes): void;
+	
+	/**
 	 * @param array $route
 	 *
 	 * @return void
 	 */
-	public function setRoute(array $route): void;
+	public function addRoute(array $route): void;
 }
