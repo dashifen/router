@@ -18,14 +18,9 @@ class RouteFactory implements RouteFactoryInterface {
 	 * @throws RouterFactoryException
 	 */
 	public function produceRoute(array $data): RouteInterface {
-		if (!is_array($data)) {
-			throw new RouterFactoryException("Invalid route information: $data.");
-		}
-		
 		$keys = array_keys($data);
 		if ($keys !== ["method", "path", "action", "private"]) {
-			$keys = join(", ", $keys);
-			throw new RouterFactoryException("Invalid route information order: $keys.");
+			throw new RouterFactoryException("Invalid route information or order: " . join(", ", $keys) . ".");
 		}
 		
 		return new Route(...$data);
