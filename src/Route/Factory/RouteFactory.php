@@ -23,6 +23,11 @@ class RouteFactory implements RouteFactoryInterface {
 			throw new RouterFactoryException("Invalid route information or order: " . join(", ", $keys) . ".");
 		}
 		
-		return new Route(...$data);
+		// PHP doesn't let you unpack associative arrays.  so, now that we
+		// know things are in the right order (or we'd have thrown an exception
+		// above), we can use array_values() to numerically index our array
+		// and then unpack it!
+		
+		return new Route(...array_values($keys));
 	}
 }
