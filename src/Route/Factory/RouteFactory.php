@@ -28,6 +28,6 @@ class RouteFactory implements RouteFactoryInterface {
 		// above), we can use array_values() to numerically index our array
 		// and then unpack it!
 		
-		return new Route(...array_values($keys));
+		return new Route(...array_values($data));
 	}
 }
