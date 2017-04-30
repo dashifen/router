@@ -98,7 +98,7 @@ class Route implements RouteInterface {
 			$path = '/' . $path;
 		}
 		
-		if (!preg_match('/(?:\/\w+)+\/?/', $path)) {
+		if (!preg_match('/(?:\/(?:\w+)?)+/', $path)) {
 			throw new RouteException("Invalid path: $path.");
 		}
 		
