@@ -136,8 +136,10 @@ class Route implements RouteInterface {
 		
 		// action should be a fully namespaced class name.  so, it's
 		// words separated by back-slashes.  we can check for that here.
+		// why do we use three back slashes in the regular expression?
+		// see http://stackoverflow.com/a/15369828/360838 (2017-04-30)
 		
-		if (!preg_match('/(?:\w+\\)+\w+/', $action)) {
+		if (!preg_match('/(?:\w+\\\)+\w+/', $action)) {
 			throw new RouteException("Invalid action: $action");
 		}
 		
