@@ -20,7 +20,10 @@ class RouteFactory implements RouteFactoryInterface {
 	public function produceRoute(array $data): RouteInterface {
 		$keys = array_keys($data);
 		if ($keys !== ["method", "path", "action", "private"]) {
-			throw new RouterFactoryException("Invalid route information or order: " . join(", ", $keys) . ".");
+			throw new RouterFactoryException(
+				"Invalid route information or order: " . join(", ", $keys) . ".",
+				RouterFactoryException::INVALID_ORDER
+			);
 		}
 		
 		// PHP doesn't let you unpack associative arrays.  so, now that we

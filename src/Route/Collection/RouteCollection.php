@@ -26,7 +26,7 @@ class RouteCollection implements RouteCollectionInterface {
 		$path = $route->getPath();
 		
 		if ($this->hasRoute($method, $path)) {
-			throw new RouteCollectionException("Duplicate route: $method;$path.");
+			throw new RouteCollectionException("Duplicate route: $method;$path.", RouteCollectionException::DUPLICATE_ROUTE);
 		}
 		
 		$this->collection[$this->getIndex($method, $path)] = $route;
@@ -51,7 +51,7 @@ class RouteCollection implements RouteCollectionInterface {
 	 */
 	public function getRoute(string $method, string $path): RouteInterface {
 		if (!$this->hasRoute($method, $path)) {
-			throw new RouteCollectionException("Unexpected route: $method;$path.");
+			throw new RouteCollectionException("Unexpected route: $method;$path.", RouteCollectionException::UNEXPECTED_ROUTE);
 		}
 		
 		return $this->collection[$this->getIndex($method, $path)];
