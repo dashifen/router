@@ -47,7 +47,10 @@ class Router implements RouterInterface {
 	 */
 	public function route(): string {
 		if (is_null($route = $this->getRoute())) {
-			throw new RouterException("Unexpected route: $this->method;$this->path.");
+			throw new RouterException(
+				"Unexpected route: $this->method;$this->path.",
+				RouterException::UNEXPECTED_ROUTE
+			);
 		}
 		
 		return $route->getAction();
