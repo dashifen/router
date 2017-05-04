@@ -36,6 +36,7 @@ class Router implements RouterInterface {
 		$this->path = $request->getServerVar("REQUEST_URI");
 		$this->collection = $collection;
 		$this->factory = $factory;
+		
 		$this->addRoutes($routes);
 	}
 	

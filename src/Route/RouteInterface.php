@@ -35,6 +35,19 @@ interface RouteInterface {
 	public function setPath(string $path): void;
 	
 	/**
+	 * @return string
+	 */
+	public function getAction(): string;
+	
+	/**
+	 * @param string $action
+	 *
+	 * @throws RouteException
+	 * @return void
+	 */
+	public function setAction(string $action): void;
+	
+	/**
 	 * @return bool
 	 */
 	public function getPrivate(): bool;
@@ -47,17 +60,16 @@ interface RouteInterface {
 	public function setPrivate(bool $private): void;
 	
 	/**
-	 * @return string
-	 */
-	public function getAction(): string;
-	
-	/**
-	 * @param string $action
+	 * @param string $parameter
 	 *
-	 * @throws RouteException
 	 * @return void
 	 */
-	public function setAction(string $action): void;
+	public function setActionParameter(string $parameter): void;
+	
+	/**
+	 * @return string
+	 */
+	public function getActionParameter(): string;
 	
 	/**
 	 * @param array $order

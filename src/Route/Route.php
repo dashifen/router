@@ -29,6 +29,11 @@ class Route implements RouteInterface {
 	protected $private = false;
 	
 	/**
+	 * @var string $actionParameter
+	 */
+	protected $actionParameter = "";
+	
+	/**
 	 * AbstractRoute constructor.
 	 *
 	 * @param string $method
@@ -106,20 +111,6 @@ class Route implements RouteInterface {
 	}
 	
 	/**
-	 * @return bool
-	 */
-	public function getPrivate(): bool {
-		return $this->private;
-	}
-	
-	/**
-	 * @param bool $private
-	 */
-	public function setPrivate(bool $private): void {
-		$this->private = $private;
-	}
-	
-	/**
 	 * @return string
 	 */
 	public function getAction(): string {
@@ -147,6 +138,37 @@ class Route implements RouteInterface {
 	}
 	
 	/**
+	 * @return bool
+	 */
+	public function getPrivate(): bool {
+		return $this->private;
+	}
+	
+	/**
+	 * @param bool $private
+	 */
+	public function setPrivate(bool $private): void {
+		$this->private = $private;
+	}
+	
+	/**
+	 * @param string $parameter
+	 *
+	 * @return void
+	 */
+	public function setActionParameter(string $parameter): void {
+		$this->actionParameter = $parameter;
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function getActionParameter(): string {
+		return $this->actionParameter;
+	}
+	
+	
+	/**
 	 * @param RouteInterface $route
 	 *
 	 * @return bool
@@ -164,8 +186,10 @@ class Route implements RouteInterface {
 	public function getAll(array $order = ["method", "path", "action", "private"]): array {
 		
 		// the only viable values in our $order argument are the names of
-		// our properties.  if we get anything else, we'll throw a tantrum,
-		// err ... an exception.
+		// our properties.  if we get anything else, we'll throw an exception.
+		// we intentionally leave off the actionParameter because it's not
+		// required and it's different from request to request.  if someone
+		// wants to use it, they can change the default $order array.
 		
 		$valid = get_object_vars($this);
 		$difference = array_diff($order, $valid);
