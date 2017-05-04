@@ -43,10 +43,10 @@ class Router implements RouterInterface {
 	/**
 	 * gets the action for this route.
 	 *
-	 * @return string
+	 * @return RouteInterface
 	 * @throws RouterException
 	 */
-	public function route(): string {
+	public function route(): RouteInterface {
 		if (is_null($route = $this->getRoute())) {
 			throw new RouterException(
 				"Unexpected route: $this->method;$this->path.",
@@ -54,7 +54,7 @@ class Router implements RouterInterface {
 			);
 		}
 		
-		return $route->getAction();
+		return $route;
 	}
 	
 	public function getRoutes(): array {

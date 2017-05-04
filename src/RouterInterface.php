@@ -11,9 +11,9 @@ use Dashifen\Router\Route\RouteInterface;
  */
 interface RouterInterface {
 	/**
-	 * @return string
+	 * @return RouteInterface
 	 */
-	public function route(): string;
+	public function route(): RouteInterface;
 
 	/**
 	 * @return array
