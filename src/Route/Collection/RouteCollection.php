@@ -10,7 +10,7 @@ use Dashifen\Router\Route\RouteInterface;
  * @package Dashifen\Router\Route\Collection
  */
 class RouteCollection implements RouteCollectionInterface {
-	protected const ACTION_PARAMETER_PATTERN = "|%s/([^/]*)|";
+	protected const ACTION_PARAMETER_PATTERN = "|%s/([^/]*)$|";
 	
 	/**
 	 * @var array $collection ;
