@@ -10,18 +10,32 @@ use Dashifen\Router\Route\RouteInterface;
  * @package Dashifen\Router\Route\Collection
  */
 class RouteCollection implements RouteCollectionInterface {
-	protected const ACTION_PARAMETER_PATTERN = "|%s/([^/]*)$|";
+	public const ACTION_PARAMETER_PATTERN = "|%s/([^/]*)$|";
 	
 	/**
-	 * @var array $collection ;
+	 * @var array $collection
 	 */
 	protected $collection = [];
 	
 	/**
-	 * RouteCollection constructor.
+	 * @var string $wildcardPattern
 	 */
-	public function __construct() {
+	protected $wildcardPattern;
+	
+	/**
+	 * RouteCollection constructor.
+	 *
+	 * @param string $wildcardPattern
+	 *
+	 * @throws RouteCollectionException
+	 */
+	public function __construct(string $wildcardPattern = self::ACTION_PARAMETER_PATTERN) {
+		if (strpos($wildcardPattern, "%s") === false) {
+			throw new RouteCollectionException("Invalid Wildcard Pattern", RouteCollectionException::INVALID_PATTERN);
+		}
+		
 		$this->collection = ["GET" => [], "POST" => []];
+		$this->wildcardPattern = $wildcardPattern;
 	}
 	
 	/**
@@ -66,7 +80,7 @@ class RouteCollection implements RouteCollectionInterface {
 		// the constant above.
 		
 		foreach ($paths as $partial) {
-			$pattern = sprintf(self::ACTION_PARAMETER_PATTERN, $partial);
+			$pattern = sprintf($this->wildcardPattern, $partial);
 			
 			if (preg_match($pattern, $path)) {
 				return true;
