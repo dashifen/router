@@ -123,13 +123,16 @@ class RouteCollection implements RouteCollectionInterface {
 				
 				// now that we've found our route, we'll extract it from
 				// the array, set its action parameter to the matched part
-				// of our $path, and then return it.  remember: the first
-				// match in our array is the part of our string that was
-				// matched; everything after that is what we want to
-				// consider our action parameter.
+				// of our $path, and then return it.
 				
 				$route = $this->collection[$method][$partial];
-				$route->setActionParameter(array_slice($matches, 1));
+				
+				// remember: the first match in our array is the part of
+				// our string that was matched; everything after that is
+				// what we want to consider our action parameter.
+				
+				$parameter = array_slice($matches, 1);
+				$route->setActionParameter($parameter);
 				return $route;
 			}
 		}
