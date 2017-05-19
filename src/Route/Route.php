@@ -31,7 +31,7 @@ class Route implements RouteInterface {
 	/**
 	 * @var array $actionParameter
 	 */
-	protected $actionParameter = "";
+	protected $actionParameter = [];
 	
 	/**
 	 * AbstractRoute constructor.
