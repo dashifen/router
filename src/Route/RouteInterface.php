@@ -60,16 +60,16 @@ interface RouteInterface {
 	public function setPrivate(bool $private): void;
 	
 	/**
-	 * @param string $parameter
+	 * @param array $parameter
 	 *
 	 * @return void
 	 */
-	public function setActionParameter(string $parameter): void;
+	public function setActionParameter(array $parameter): void;
 	
 	/**
 	 * @return string
 	 */
-	public function getActionParameter(): string;
+	public function getActionParameter(): array;
 	
 	/**
 	 * @param array $order

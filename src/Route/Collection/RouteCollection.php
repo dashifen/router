@@ -116,17 +116,20 @@ class RouteCollection implements RouteCollectionInterface {
 		$paths = array_keys($this->collection[$method]);
 		
 		foreach ($paths as $partial) {
-			$pattern = sprintf(self::ACTION_PARAMETER_PATTERN, $partial);
+			$pattern = sprintf($this->wildcardPattern, $partial);
 			
 			if (preg_match($pattern, $path, $matches)) {
 				/** @var RouteInterface $route */
 				
 				// now that we've found our route, we'll extract it from
 				// the array, set its action parameter to the matched part
-				// of our $path, and then return it.
+				// of our $path, and then return it.  remember: the first
+				// match in our array is the part of our string that was
+				// matched; everything after that is what we want to
+				// consider our action parameter.
 				
 				$route = $this->collection[$method][$partial];
-				$route->setActionParameter($matches[1]);
+				$route->setActionParameter(array_slice($matches, 1));
 				return $route;
 			}
 		}

@@ -29,7 +29,7 @@ class Route implements RouteInterface {
 	protected $private = false;
 	
 	/**
-	 * @var string $actionParameter
+	 * @var array $actionParameter
 	 */
 	protected $actionParameter = "";
 	
@@ -152,18 +152,18 @@ class Route implements RouteInterface {
 	}
 	
 	/**
-	 * @param string $parameter
+	 * @param array $parameter
 	 *
 	 * @return void
 	 */
-	public function setActionParameter(string $parameter): void {
+	public function setActionParameter(array $parameter): void {
 		$this->actionParameter = $parameter;
 	}
 	
 	/**
-	 * @return string
+	 * @return array
 	 */
-	public function getActionParameter(): string {
+	public function getActionParameter(): array {
 		return $this->actionParameter;
 	}
 	
