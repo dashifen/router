@@ -17,8 +17,8 @@
 		}
 	},
 	"require": {
-		"php": "^7.1",
-		"dashifen/request": "^1.0"
+		"php": "7.3.*",
+		"dashifen/request": "1.3.*"
 	},
 	"license": "MIT"
 }
