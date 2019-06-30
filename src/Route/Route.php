@@ -32,15 +32,17 @@ class Route implements RouteInterface {
 	 * @var array $actionParameter
 	 */
 	protected $actionParameter = [];
-	
-	/**
-	 * AbstractRoute constructor.
-	 *
-	 * @param string $method
-	 * @param string $path
-	 * @param string $action
-	 * @param bool   $private
-	 */
+
+  /**
+   * AbstractRoute constructor.
+   *
+   * @param string $method
+   * @param string $path
+   * @param string $action
+   * @param bool   $private
+   *
+   * @throws RouteException
+   */
 	public function __construct(
 		string $method,
 		string $path,
@@ -166,13 +168,14 @@ class Route implements RouteInterface {
 	public function getActionParameter(): array {
 		return $this->actionParameter;
 	}
-	
-	
-	/**
-	 * @param RouteInterface $route
-	 *
-	 * @return bool
-	 */
+
+
+  /**
+   * @param RouteInterface $route
+   *
+   * @return bool
+   * @throws RouteException
+   */
 	public function matchRoute(RouteInterface $route): bool {
 		return $this->getAll() === $route->getAll();
 	}
@@ -214,10 +217,11 @@ class Route implements RouteInterface {
 		
 		return $properties;
 	}
-	
-	/**
-	 * @return string
-	 */
+
+  /**
+   * @return string
+   * @throws RouteException
+   */
 	public function __toString(): string {
 		return vsprintf("%s (%s, %s, %s)", $this->getAll([
 			"path", "action", "method", "private",

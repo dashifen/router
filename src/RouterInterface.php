@@ -10,33 +10,28 @@ use Dashifen\Router\Route\RouteInterface;
  * @package Dashifen\Router
  */
 interface RouterInterface {
-	/**
-	 * @return RouteInterface
-	 */
-	public function route(): RouteInterface;
+  /**
+   * @return array
+   */
+  public function getRoutes (): array;
 
-	/**
-	 * @return array
-	 */
-	public function getRoutes(): array;
-	
-	/**
-	 * @return RouteInterface|null
-	 */
-	public function getRoute(): ?RouteInterface;
-	
-	/**
-	 * @param array $routes
-	 *
-	 * @throws RouterException
-	 * @return void
-	 */
-	public function addRoutes(array $routes): void;
-	
-	/**
-	 * @param array $route
-	 *
-	 * @return void
-	 */
-	public function addRoute(array $route): void;
+  /**
+   * @return RouteInterface
+   */
+  public function getRoute (): RouteInterface;
+
+  /**
+   * @param array $routes
+   *
+   * @return void
+   * @throws RouterException
+   */
+  public function addRoutes (array $routes): void;
+
+  /**
+   * @param array $route
+   *
+   * @return void
+   */
+  public function addRoute (array $route): void;
 }

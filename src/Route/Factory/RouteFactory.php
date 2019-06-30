@@ -3,6 +3,7 @@
 namespace Dashifen\Router\Route\Factory;
 
 use Dashifen\Router\Route\Route;
+use Dashifen\Router\Route\RouteException;
 use Dashifen\Router\Route\RouteInterface;
 
 /**
@@ -11,12 +12,13 @@ use Dashifen\Router\Route\RouteInterface;
  * @package Dashifen\Router\Route\Factory
  */
 class RouteFactory implements RouteFactoryInterface {
-	/**
-	 * @param array $data
-	 *
-	 * @return RouteInterface
-	 * @throws RouterFactoryException
-	 */
+  /**
+   * @param array $data
+   *
+   * @return RouteInterface
+   * @throws RouterFactoryException
+   * @throws RouteException
+   */
 	public function produceRoute(array $data): RouteInterface {
 		$keys = array_keys($data);
 		if ($keys !== ["method", "path", "action", "private"]) {

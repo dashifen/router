@@ -1,24 +1,25 @@
 {
-	"name": "dashifen/router",
-	"description": "a PHP routing object",
-	"minimum-stability": "stable",
-	"type": "library",
-	"authors": [
-		{
-			"name": "David Dashifen Kees",
-			"email": "dashifen@dashifen.com",
-			"homepage": "https://dashifen.com",
-			"role": "developer"
-		}
-	],
-	"autoload": {
-		"psr-4": {
-			"Dashifen\\Router\\": "src/"
-		}
-	},
-	"require": {
-		"php": "7.3.*",
-		"dashifen/request": "1.3.*"
-	},
-	"license": "MIT"
+  "name": "dashifen/router",
+  "description": "a PHP routing object",
+  "minimum-stability": "stable",
+  "type": "library",
+  "authors": [
+    {
+      "name": "David Dashifen Kees",
+      "email": "dashifen@dashifen.com",
+      "homepage": "https://dashifen.com",
+      "role": "developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Dashifen\\Router\\": "src/"
+    }
+  },
+  "require": {
+    "php": "7.3.*",
+    "dashifen/request": "1.3.*",
+    "dashifen/exception": "1.1.*"
+  },
+  "license": "MIT"
 }
