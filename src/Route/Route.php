@@ -2,7 +2,7 @@
 
 namespace Dashifen\Router\Route;
 
-use Dashifen\Container\Container;
+use Dashifen\Repository\Repository;
 
 /**
  * Class AbstractRoute
@@ -15,7 +15,7 @@ use Dashifen\Container\Container;
  * @property bool   $private
  * @property array  $actionParameter
  */
-class Route extends Container implements RouteInterface {
+class Route extends Repository implements RouteInterface {
   /**
    * @var string $method
    */

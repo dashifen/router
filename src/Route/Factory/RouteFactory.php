@@ -2,7 +2,7 @@
 
 namespace Dashifen\Router\Route\Factory;
 
-use Dashifen\Container\ContainerException;
+use Dashifen\Repository\RepositoryException;
 use Dashifen\Router\Route\Route;
 use Dashifen\Router\Route\RouteException;
 use Dashifen\Router\Route\RouteInterface;
@@ -23,7 +23,7 @@ class RouteFactory implements RouteFactoryInterface {
    *
    * @return RouteInterface
    * @throws RouterFactoryException
-   * @throws ContainerException
+   * @throws RepositoryException
    */
   public function produceRoute (array $data): RouteInterface {
     $diff = array_diff(array_keys($data), ["method", "path", "action", "private"]);
@@ -56,7 +56,7 @@ class RouteFactory implements RouteFactoryInterface {
    * of our Router object.
    *
    * @return RouteInterface
-   * @throws ContainerException
+   * @throws RepositoryException
    */
   public function produceBlankRoute (): RouteInterface {
     return new Route([]);

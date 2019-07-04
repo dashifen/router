@@ -6,7 +6,7 @@ namespace Dashifen\Router;
 
 use Dashifen\Request\RequestInterface;
 use Dashifen\Router\Route\RouteInterface;
-use Dashifen\Container\ContainerException;
+use Dashifen\Repository\RepositoryException;
 use Dashifen\Router\Route\Factory\RouteFactoryInterface;
 use Dashifen\Router\Route\Factory\RouterFactoryException;
 use Dashifen\Router\Route\Collection\RouteCollectionException;
@@ -56,7 +56,7 @@ class Router implements RouterInterface {
    * @param RouteFactoryInterface    $factory
    * @param array                    $routes
    *
-   * @throws ContainerException
+   * @throws RepositoryException
    * @throws RouteCollectionException
    * @throws RouterFactoryException
    * @throws RouterException
@@ -110,7 +110,7 @@ class Router implements RouterInterface {
    * on the request.
    *
    * @return RouteInterface
-   * @throws ContainerException
+   * @throws RepositoryException
    * @throws RouteCollectionException
    * @throws RouterException
    */
@@ -169,7 +169,7 @@ class Router implements RouterInterface {
    * Returns a route that's constructed based on the current request.
    *
    * @return RouteInterface
-   * @throws ContainerException
+   * @throws RepositoryException
    */
   protected function getAutoRoute (): RouteInterface {
 
@@ -340,7 +340,7 @@ class Router implements RouterInterface {
    *
    * @param array $route
    *
-   * @throws ContainerException
+   * @throws RepositoryException
    * @throws RouteCollectionException
    * @throws RouterFactoryException
    * @throws RouterException
@@ -362,7 +362,7 @@ class Router implements RouterInterface {
    *
    * @param array $routes
    *
-   * @throws ContainerException
+   * @throws RepositoryException
    * @throws RouteCollectionException
    * @throws RouterFactoryException
    * @throws RouterException

@@ -2,7 +2,7 @@
 
 namespace Dashifen\Router\Route\Factory;
 
-use Dashifen\Container\ContainerException;
+use Dashifen\Repository\RepositoryException;
 use Dashifen\Router\Route\RouteInterface;
 
 /**
@@ -21,7 +21,7 @@ interface RouteFactoryInterface {
 	 *
 	 * @return RouteInterface
    * @throws RouterFactoryException
-   * @throws ContainerException
+   * @throws RepositoryException
 	 */
 	public function produceRoute(array $data): RouteInterface;
 
@@ -33,7 +33,7 @@ interface RouteFactoryInterface {
    * of our Router object.
    *
    * @return RouteInterface
-   * @throws ContainerException
+   * @throws RepositoryException
    */
 	public function produceBlankRoute(): RouteInterface;
 }
