@@ -1,7 +1,10 @@
 <?php
 
+/** @noinspection PhpUnusedParameterInspection */
+
 namespace Dashifen\Router;
 
+use Dashifen\Container\ContainerException;
 use Dashifen\Request\RequestInterface;
 use Dashifen\Router\Route\RouteInterface;
 use Dashifen\Router\Route\Factory\RouteFactoryInterface;
@@ -41,6 +44,11 @@ class Router implements RouterInterface {
   protected $dirty = false;
 
   /**
+   * @var bool
+   */
+  protected $autoRouter = false;
+
+  /**
    * Router constructor.
    *
    * @param RequestInterface         $request
@@ -48,8 +56,10 @@ class Router implements RouterInterface {
    * @param RouteFactoryInterface    $factory
    * @param array                    $routes
    *
+   * @throws ContainerException
    * @throws RouteCollectionException
    * @throws RouterFactoryException
+   * @throws RouterException
    */
   public function __construct (
     RequestInterface $request,
@@ -66,44 +76,60 @@ class Router implements RouterInterface {
   }
 
   /**
-   * getRoutes
+   * isAutoRouter
    *
-   * Returns the routes collected by this Router.
+   * An "auto-router" automatically constructs the RouteInterface based
+   * on the current request.  There's no need to add routes to its collection,
+   * it'll figure it all out on its own!
    *
-   * @return array
+   * @param bool|null $autoRouterState
+   *
+   * @return bool
    */
-  public function getRoutes (): array {
-    return $this->collection->getRoutes();
+  public function isAutoRouter (?bool $autoRouterState = null): bool {
+    if (!is_null($autoRouterState)) {
+
+      // if our state isn't null, then we set our property.  thus, passing
+      // a true here makes this an auto-router.
+
+      $this->autoRouter = $autoRouterState;
+    }
+
+    // if we received a null, we still want to return the current, unchanged
+    // state of our auto-router property.
+
+    return $this->autoRouter;
   }
 
-  /**
-   * addRoutes
-   *
-   * Adds an array of routes to this object's collection
-   *
-   * @param array $routes
-   *
-   * @throws RouteCollectionException
-   * @throws RouterFactoryException
-   */
-  public function addRoutes (array $routes): void {
-    foreach ($routes as $route) {
-      $this->addRoute($route);
-    }
-  }
 
   /**
    * getRoute
    *
-   * Sets and returns the route property the first time it's called; thereafter
-   * re-returns the previously identified route.  Assumption:  list of routes
-   * doesn't change between calls.
+   * Returns the route for the current request.  If this isn't an auto-router,
+   * we use the collection to do so.  Otherwise, we construct the route based
+   * on the request.
+   *
+   * @return RouteInterface
+   * @throws ContainerException
+   * @throws RouteCollectionException
+   * @throws RouterException
+   */
+  public function getRoute (): RouteInterface {
+    return !$this->autoRouter
+      ? $this->getCollectedRoute()
+      : $this->getAutoRoute();
+  }
+
+  /**
+   * getCollectedRoute
+   *
+   * Returns a route based on our collected routes.
    *
    * @return RouteInterface
    * @throws RouteCollectionException
    * @throws RouterException
    */
-  public function getRoute (): RouteInterface {
+  protected function getCollectedRoute (): RouteInterface {
 
     // the guts of our router is actually here.  when constructed, we
     // use the $request object to get the URI and method for this request.
@@ -138,6 +164,146 @@ class Router implements RouterInterface {
   }
 
   /**
+   * getAutoRoute
+   *
+   * Returns a route that's constructed based on the current request.
+   *
+   * @return RouteInterface
+   * @throws ContainerException
+   */
+  protected function getAutoRoute (): RouteInterface {
+
+    // the auto-routing capability uses information in our current
+    // request to construct a RouteInterface object on the fly and
+    // returns it.  we assume that whatever environment is using this
+    // object in that capacity will define the right Actions, etc. so
+    // that everything works out in the end.
+
+    $route = $this->setRouteActionAndParameter(
+      $this->factory->produceBlankRoute()
+    );
+
+    // now, we've set our route's action and action parameter, we need to
+    // handle the path, method, and privacy.  the first two are easy; we can
+    // simply pass our own properties over to it.  privacy is harder, so
+    // we'll call the method below to allow apps using this router to over-
+    // ride our default and do something more useful.
+
+    $route->setPath($this->path);
+    $route->setMethod($this->method);
+    $route->setPrivate($this->isRoutePrivate($route));
+
+    return $route;
+  }
+
+  /**
+   * setRouteActionAndParameter
+   *
+   * Sets the action and, optionally, the action parameter of our route
+   * parameter and returns it back to the calling scope.
+   *
+   * @param RouteInterface $route
+   *
+   * @return RouteInterface
+   */
+  protected function setRouteActionAndParameter (RouteInterface $route): RouteInterface {
+
+    // we split our path based on the forward slashes between its parts.
+    // then, we add our method onto the front of it.  then, we need to filter
+    // it into two different sets of parts:  the numeric ones and the non-
+    // numeric ones.  the former become our action parameter, the latter we
+    // transform so that they become our action.
+
+    $actionSoup = explode("/", $this->path);
+    array_unshift($actionSoup, $this->method);
+    $actionParameters = array_filter($actionSoup, function (string $chunk): bool {
+      return is_numeric($chunk);
+    });
+
+    // now we have the set of action parts that are numeric.  we could do
+    // another filter to get the non-numeric ones, but we can also just use
+    // array_diff().  we'll hope that avoiding the callback and filtering
+    // loop saves us some time and we can always benchmark it later if we
+    // want to.
+
+    $actionParts = array_diff($actionSoup, $actionParameters);
+    $route->setAction($this->transformAction($actionParts));
+    $route->setActionParameter($actionParameters);
+    return $route;
+  }
+
+  /**
+   * transformAction
+   *
+   * Given an array of actions parts (e.g. [foo, bar, baz]), returns
+   * the name of our action in StudlyCaps (e.g. FooBarBaz).
+   *
+   * @param array $actionParts
+   *
+   * @return string
+   */
+  protected function transformAction (array $actionParts): string {
+
+    // we walk our array using the method below.  once we're done with that,
+    // to return a string instead of array, we join the transformed array by
+    // empty strings.
+
+    array_walk($actionParts, function (string &$part): void {
+
+      // we want to capitalize $part so that it's ready to be joined into a
+      // StudlyCaps action name.  but, we also want to allow a hyphenated
+      // string, like foo-bar.  in this case, we transform it into FooBar.
+      // this, unfortunately, calls for preg_replace_callback() which means
+      // we're putting a callback inside this callback so we can callback
+      // while we're calling back.
+
+      $part = ucfirst(preg_replace_callback("/-([a-z])/", function($matches) {
+
+        // this matches any character preceded by a hyphen.  we want to return
+        // the capitalized version of the that character which is then used to
+        // replace the lower case version that we matched.
+
+        return strtoupper($matches[1]);
+      }, strtolower($part)));
+    });
+
+    return join("", $actionParts);
+  }
+
+  /**
+   * isRoutePrivate
+   *
+   * By default, we just return false.  But, we assume that apps that use
+   * this router will override this and to produce a more useful version that
+   * might distinguish between public and private routes based on the
+   * parameter.
+   *
+   * @param RouteInterface $route
+   *
+   * @return bool
+   */
+  protected function isRoutePrivate (RouteInterface $route): bool {
+    return false;
+  }
+
+  /**
+   * getRoutes
+   *
+   * Returns the routes collected by this Router.
+   *
+   * @return array
+   * @throws RouterException
+   */
+  public function getRoutes (): array {
+    if ($this->autoRouter) {
+      throw new RouterException("Auto-routers don't collect routes.",
+        RouterException::UNEXPECTED_AUTOROUTER_ACTION);
+    }
+
+    return $this->collection->getRoutes();
+  }
+
+  /**
    * addRoute
    *
    * Adds a route to this object's collection and sets the dirty flag so we
@@ -145,11 +311,36 @@ class Router implements RouterInterface {
    *
    * @param array $route
    *
+   * @throws ContainerException
    * @throws RouteCollectionException
    * @throws RouterFactoryException
+   * @throws RouterException
    */
   public function addRoute (array $route): void {
+    if ($this->autoRouter) {
+      throw new RouterException("Auto-routers don't collect routes.",
+        RouterException::UNEXPECTED_AUTOROUTER_ACTION);
+    }
+
     $this->collection->addRoute($this->factory->produceRoute($route));
     $this->dirty = true;
+  }
+
+  /**
+   * addRoutes
+   *
+   * Adds an array of routes to this object's collection
+   *
+   * @param array $routes
+   *
+   * @throws ContainerException
+   * @throws RouteCollectionException
+   * @throws RouterFactoryException
+   * @throws RouterException
+   */
+  public function addRoutes (array $routes): void {
+    foreach ($routes as $route) {
+      $this->addRoute($route);
+    }
   }
 }

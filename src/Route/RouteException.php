@@ -9,4 +9,5 @@ class RouteException extends Exception {
   public const INVALID_PATH = 2;
   public const INVALID_ACTION = 3;
   public const UNKNOWN_PROPERTY = 4;
+  public const INVALID_CONSTRUCTION = 5;
 }
