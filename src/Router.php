@@ -4,9 +4,9 @@
 
 namespace Dashifen\Router;
 
-use Dashifen\Container\ContainerException;
 use Dashifen\Request\RequestInterface;
 use Dashifen\Router\Route\RouteInterface;
+use Dashifen\Container\ContainerException;
 use Dashifen\Router\Route\Factory\RouteFactoryInterface;
 use Dashifen\Router\Route\Factory\RouterFactoryException;
 use Dashifen\Router\Route\Collection\RouteCollectionException;
@@ -179,9 +179,9 @@ class Router implements RouterInterface {
     // object in that capacity will define the right Actions, etc. so
     // that everything works out in the end.
 
-    $route = $this->setRouteActionAndParameter(
-      $this->factory->produceBlankRoute()
-    );
+    $route = $this->factory->produceBlankRoute();
+    $route = $this->setRouteActionAndParameter($route);
+
 
     // now, we've set our route's action and action parameter, we need to
     // handle the path, method, and privacy.  the first two are easy; we can
@@ -214,9 +214,8 @@ class Router implements RouterInterface {
     // numeric ones.  the former become our action parameter, the latter we
     // transform so that they become our action.
 
-    $actionSoup = explode("/", $this->path);
-    array_unshift($actionSoup, $this->method);
-    $actionParameters = array_filter($actionSoup, function (string $chunk): bool {
+    $actionParts = $this->getActionParts();
+    $actionParameters = array_filter($actionParts, function (string $chunk): bool {
       return is_numeric($chunk);
     });
 
@@ -226,10 +225,40 @@ class Router implements RouterInterface {
     // loop saves us some time and we can always benchmark it later if we
     // want to.
 
-    $actionParts = array_diff($actionSoup, $actionParameters);
-    $route->setAction($this->transformAction($actionParts));
+    $action = array_diff($actionParts, $actionParameters);
+    $route->setAction($this->transformAction($action));
     $route->setActionParameter($actionParameters);
     return $route;
+  }
+
+  /**
+   * getActionParts
+   *
+   * Returns an array of the method followed by the parts of our path so
+   * that we can use them to identify our Action.
+   *
+   * @return array
+   */
+  protected function getActionParts (): array {
+
+    // we'll split our path using the forward slash that separates the URL
+    // of our request.  then, we filter out the blanks.  we add the method
+    // onto the front of that array and that gives us the parts that we
+    // need to work with.
+
+    $parts = array_filter(explode("/", $this->path));
+    array_unshift($parts, $this->method);
+
+    // before we return, we want to see if there's only one value in the
+    // array.  if so, that means we're at the root of this domain.  in that
+    // case, we add "index" to our array so that our action will be either
+    // GetIndex or, perhaps, PostIndex.
+
+    if (sizeof($parts) === 1) {
+      $parts[] = "index";
+    }
+
+    return $parts;
   }
 
   /**
@@ -243,10 +272,10 @@ class Router implements RouterInterface {
    * @return string
    */
   protected function transformAction (array $actionParts): string {
-
     // we walk our array using the method below.  once we're done with that,
     // to return a string instead of array, we join the transformed array by
     // empty strings.
+
 
     array_walk($actionParts, function (string &$part): void {
 
@@ -257,7 +286,7 @@ class Router implements RouterInterface {
       // we're putting a callback inside this callback so we can callback
       // while we're calling back.
 
-      $part = ucfirst(preg_replace_callback("/-([a-z])/", function($matches) {
+      $part = ucfirst(preg_replace_callback("/-([a-z])/", function ($matches) {
 
         // this matches any character preceded by a hyphen.  we want to return
         // the capitalized version of the that character which is then used to
