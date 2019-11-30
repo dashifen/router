@@ -17,10 +17,10 @@
     }
   },
   "require": {
-    "php": "7.3.*",
-    "dashifen/request": "^1.3",
-    "dashifen/exception": "^1.1",
-    "dashifen/repository": "^1.0"
+    "php": ">=7.3",
+    "dashifen/request": "^1",
+    "dashifen/exception": "^1",
+    "dashifen/repository": "^1"
   },
   "license": "MIT"
 }
