@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "755d51a281d993588d7df94c1d7fe593",
+    "content-hash": "7e5bb898886e5fbacaceaf6f83422cd7",
     "packages": [
         {
             "name": "dashifen/case-changing-trait",
@@ -46,6 +46,48 @@
                 "source": "https://github.com/dashifen/case-changing-trait/tree/1.0.1"
             },
             "time": "2021-04-07T12:54:46+00:00"
+        },
+        {
+            "name": "dashifen/collection",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dashifen/collection.git",
+                "reference": "fbe31167b868fb8ced2b6c637039a8ff10749bba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dashifen/collection/zipball/fbe31167b868fb8ced2b6c637039a8ff10749bba",
+                "reference": "fbe31167b868fb8ced2b6c637039a8ff10749bba",
+                "shasum": ""
+            },
+            "require": {
+                "dashifen/exception": "^1.2",
+                "php": ">=7.4"
+            },
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "Dashifen\\Collection\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Dashifen Kees",
+                    "email": "dashifen@dashifen.com",
+                    "role": "developer"
+                }
+            ],
+            "description": "An abstract object from which concrete collections can be built.",
+            "support": {
+                "issues": "https://github.com/dashifen/collection/issues",
+                "source": "https://github.com/dashifen/collection/tree/2.1.0"
+            },
+            "time": "2022-03-02T17:15:14+00:00"
         },
         {
             "name": "dashifen/exception",
@@ -383,7 +425,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0"
+        "php": ">=8.4"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
