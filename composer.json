@@ -7,7 +7,6 @@
     {
       "name": "David Dashifen Kees",
       "email": "dashifen@dashifen.com",
-      "homepage": "https://dashifen.com",
       "role": "developer"
     }
   ],
@@ -17,10 +16,10 @@
     }
   },
   "require": {
-    "php": ">=7.3",
-    "dashifen/request": "^1",
-    "dashifen/exception": "^1",
-    "dashifen/repository": "^1"
+    "php": ">=8.4",
+    "dashifen/exception": "^1.0",
+    "dashifen/request": "^2.0",
+    "dashifen/case-changing-trait": "^1.0"
   },
   "license": "MIT"
 }
