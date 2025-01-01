@@ -2,41 +2,17 @@
 
 namespace Dashifen\Router\Route\Collection;
 
-use Dashifen\Router\Route\RouteInterface;
+use Dashifen\Collection\CollectionInterface;
 
-/**
- * Interface RouteCollectionInterface
- *
- * @package Dashifen\Router\Route\Collection
- */
-interface RouteCollectionInterface {
-	/**
-	 * @param RouteInterface $route
-	 *
-	 * @throws RouteCollectionException
-	 * @return void
-	 */
-	public function addRoute(RouteInterface $route): void;
-	
-	/**
-	 * @param string $method
-	 * @param string $path
-	 *
-	 * @return bool
-	 */
-	public function hasRoute(string $method, string $path): bool;
-	
-	/**
-	 * @param string $method
-	 * @param string $path
-	 *
-	 * @throws RouteCollectionException
-	 * @return RouteInterface
-	 */
-	public function getRoute(string $method, string $path): RouteInterface;
-	
-	/**
-	 * @return RouteInterface[];
-	 */
-	public function getRoutes(): array;
+interface RouteCollectionInterface extends CollectionInterface
+{
+  /**
+   * Given the name of an HTTP method, returns the routes in our collection
+   * which match that method.
+   *
+   * @param string $method
+   *
+   * @return array
+   */
+  public function getRoutes(string $method): array;
 }
