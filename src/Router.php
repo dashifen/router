@@ -16,6 +16,20 @@ class Router implements RouterInterface
   
   protected string $path;
   protected string $method;
+  protected(set) RouteInterface $route {
+    get {
+      return $this->collection !== null
+        ? $this->getCollectedRoute()
+        : $this->getAutoRoute();
+    }
+    
+    set {
+      throw new RouterException(
+        'Do not set the route property; just let the get hook handle things.',
+        RouterException::UNEXPECTED_ROUTE
+      );
+    }
+  }
   
   /**
    * Router constructor.
@@ -30,22 +44,6 @@ class Router implements RouterInterface
     $request ??= new Request();
     $this->path = $request->getServerVar("REQUEST_URI");
     $this->method = $request->getServerVar("REQUEST_METHOD");
-  }
-  
-  /**
-   * Returns the route for the current request.  If this isn't an auto-router,
-   * we use our collection to do so.  Otherwise, we construct the route based
-   * on the request.
-   *
-   * @return RouteInterface
-   * @throws RouterException
-   * @throws RouteException
-   */
-  public function getRoute(): RouteInterface
-  {
-    return $this->collection !== null
-      ? $this->getCollectedRoute()
-      : $this->getAutoRoute();
   }
   
   /**
