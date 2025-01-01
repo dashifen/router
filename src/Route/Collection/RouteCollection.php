@@ -30,7 +30,7 @@ class RouteCollection implements RouteCollectionInterface {
 	 * @throws RouteCollectionException
 	 */
 	public function __construct(string $wildcardPattern = self::ACTION_PARAMETER_PATTERN) {
-		if (strpos($wildcardPattern, "%s") === false) {
+		if (!str_contains($wildcardPattern, "%s")) {
 			throw new RouteCollectionException("Invalid Wildcard Pattern", RouteCollectionException::INVALID_PATTERN);
 		}
 		

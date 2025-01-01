@@ -2,10 +2,9 @@
 
 namespace Dashifen\Router\Route\Factory;
 
-use Dashifen\Repository\RepositoryException;
 use Dashifen\Router\Route\Route;
-use Dashifen\Router\Route\RouteException;
 use Dashifen\Router\Route\RouteInterface;
+use Dashifen\Router\Route\RouteException;
 
 /**
  * Class RouteFactory
@@ -14,8 +13,6 @@ use Dashifen\Router\Route\RouteInterface;
  */
 class RouteFactory implements RouteFactoryInterface {
   /**
-   * produceRoute
-   *
    * Given an array of data, that should provide some or all of our Route
    * properties, returns a Route object created from that array.
    *
@@ -23,9 +20,9 @@ class RouteFactory implements RouteFactoryInterface {
    *
    * @return RouteInterface
    * @throws RouterFactoryException
-   * @throws RepositoryException
+   * @throws RouteException
    */
-  public function produceRoute (array $data): RouteInterface {
+  public static function produceRoute (array $data): RouteInterface {
     $diff = array_diff(array_keys($data), ["method", "path", "action", "private"]);
 
     // array_diff() returns the set of values in the first array that are
@@ -35,8 +32,8 @@ class RouteFactory implements RouteFactoryInterface {
 
     if (sizeof($diff) > 0) {
       throw new RouterFactoryException(
-        "Invalid route information or order: " . join(", ", $keys) . ".",
-        RouterFactoryException::INVALID_ORDER
+        "Invalid route information: " . join(", ", $diff) . ".",
+        RouterFactoryException::INVALID_ROUTE_DATA
       );
     }
 
@@ -47,18 +44,16 @@ class RouteFactory implements RouteFactoryInterface {
 
     return new Route($data);
   }
-
+  
   /**
-   * produceBlankRoute
-   *
    * Returns a blank route with no data.  Properties are set in the calling
    * scope.  This is most likely used during the auto-routing functionality
    * of our Router object.
    *
    * @return RouteInterface
-   * @throws RepositoryException
+   * @throws RouteException
    */
-  public function produceBlankRoute (): RouteInterface {
+  public static function produceBlankRoute (): RouteInterface {
     return new Route([]);
   }
 }
