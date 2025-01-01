@@ -12,14 +12,6 @@ use Dashifen\Router\Route\RouteInterface;
 interface RouterInterface
 {
   /**
-   * Returns the route for the current request; will construct that route
-   * if this is an auto-router.
-   *
-   * @return RouteInterface
-   */
-  public function getRoute(): RouteInterface;
-  
-  /**
    * Returns the full set of routes in the router's collection.  Throws an
    * exception if this is an auto-router.
    *
