@@ -2,191 +2,114 @@
 
 namespace Dashifen\Router\Route;
 
-use Dashifen\Repository\Repository;
-
 /**
- * Class AbstractRoute
- *
- * @package Dashifen\Router\Route
- *
- * @property string $method
- * @property string $path
- * @property string $action
- * @property bool   $private
- * @property array  $actionParameter
+ * Class Route
  */
-class Route extends Repository implements RouteInterface {
-  /**
-   * @var string $method
-   */
-  protected $method;
+class Route implements RouteInterface
+{
+  protected(set) string $method {
+    set {
+      
+      // if the uppercase version of our value is not considered a viable
+      // method, then we throw a RouteException.  this pattern is repeated
+      // below:  tenable values are set, but untenable ones cause an
+      // exception.
 
+      $this->method = !in_array(($method = strtoupper($value)), ['GET', 'POST'])
+        ? throw new RouteException("Unexpected method: $value.", RouteException::UNKNOWN_METHOD)
+        : $method;
+    }
+  }
+  
+  protected(set) string $path {
+    get {
+      
+      // for convenience, we want our paths to begin with slashes and not end
+      // with them.  this is simply our opinion as a default, if you don't like
+      // it, feel free to extend and override this getter.
+      
+      $value = !str_starts_with($this->path, '/')
+        ? '/' . $this->path
+        : $this->path;
+      
+      return str_ends_with($value, '/')
+        ? substr($value, 0, strlen($value) - 1)
+        : $value;
+    }
+    
+    set {
+      $this->path = ($path = parse_url($value, PHP_URL_PATH)) === false
+        ? throw new RouteException("Invalid path: $value.", RouteException::UNKNOWN_PATH)
+        : $path;
+    }
+  }
+  
+  protected(set) string $action {
+    set {
+      
+      // actions are meant to be objects that perform whatever we want to
+      // happen when a given route is requested.  therefore, our test here is
+      // to see if $value is an existing class or not.
+      
+      $this->action = !class_exists($value)
+        ? throw new RouteException("Unknown action: $value", RouteException::UNKNOWN_ACTION)
+        : $value;
+    }
+  }
+  
+  protected(set) bool $private = false {
+    set => $value;
+  }
+  
+  protected(set) array $actionParameter = [] {
+    set => $value;
+  }
+  
   /**
-   * @var string $path
-   */
-  protected $path;
-
-  /**
-   * @var string $action
-   */
-  protected $action;
-
-  /**
-   * @var bool $private
-   */
-  protected $private = false;
-
-  /**
-   * @var array $actionParameter
-   */
-  protected $actionParameter = [];
-
-  /**
-   * setMethod
+   * Constructs a Route using $data which must map the names of the above
+   * properties to the values we want them to have.
    *
-   * Sets the method property, which by default must be either GET or
-   * POST.
+   * @param array $data
    *
-   * @param string $method
-   *
-   * @return void
    * @throws RouteException
    */
-  public function setMethod (string $method): void {
-    $method = strtoupper($method);
-    if (!in_array($method, $this->getViableMethods())) {
-      throw new RouteException("Unexpected method: $method.");
+  public function __construct(array $data = [])
+  {
+    foreach ($data as $property => $value) {
+      
+      // by default, our isProperty method throws an exception if an index
+      // within the $data parameter does not match one of the above properties.
+      // if you would prefer that it returns false instead, override it.  or,
+      // override this constructor and catch the exception as needed.
+      
+      if ($this->isProperty($property)) {
+        $this->$property = $value;
+      }
     }
-
-    $this->method = $method;
   }
-
+  
   /**
-   * getViableMethods
+   * Returns true if $property matches the name of one of our properties, and
+   * otherwise throws an exception.
    *
-   * By default, returns an array containing GET and POST for use in the
-   * prior method.  If you want to allow PUT and/or DELETE (or disallow GET
-   * and/or POST) override this method and return some other array of viable
-   * methods.
+   * @param string $property
    *
-   * @return array
-   */
-  protected function getViableMethods (): array {
-    return ["GET", "POST"];
-  }
-
-  /**
-   * setPath
-   *
-   * Sets the path property which, by default, is expected to be a series
-   * of "words" separated by forward slashes.  A "word" in this context is
-   * made up of one or more characters that match \w in a regular
-   * expression.
-   *
-   * @param string $path
-   *
-   * @return void
+   * @return bool
    * @throws RouteException
    */
-  public function setPath (string $path): void {
-
-    // paths should be words separated by forward-slashes.  we
-    // can check for that as follows.  first, if there's not one
-    // in the front of our string, we add it.
-
-    if (substr($path, 0, 1) !== '/') {
-      $path = '/' . $path;
+  protected function isProperty(string $property): true
+  {
+    if (!in_array($property, get_object_vars($this))) {
+      throw new RouteException(
+        "Unknown property: $property.",
+        RouteException::UNKNOWN_PROPERTY
+      );
     }
-
-    if (!preg_match($this->getPathPattern(), $path)) {
-      throw new RouteException("Invalid path: $path.");
-    }
-
-    $this->path = $path;
+    
+    return true;
   }
-
+  
   /**
-   * getPathPattern
-   *
-   * Returns the pattern used when setting the path property to identify
-   * viable paths within this app.  Override to change from the default:
-   * a series of "words" separated by forward slashes where "words" are
-   * made up of one or more characters that match \w in regular
-   * expressions.
-   *
-   * @return string
-   */
-  protected function getPathPattern (): string {
-    return '/(?:\/(?:\w+)?)+/';
-  }
-
-  /**
-   * setAction
-   *
-   * Sets the Action property, an optionally namespaced object name in
-   * StudlyCaps by default.
-   *
-   * @param string $action
-   *
-   * @return void
-   * @throws RouteException
-   */
-  public function setAction (string $action): void {
-
-    // action should be a fully namespaced class name.  so, it's
-    // words separated by back-slashes.  we can check for that here.
-    // why do we use three back slashes in the regular expression?
-    // see http://stackoverflow.com/a/15369828/360838 (2017-04-30)
-
-    if (!preg_match($this->getActionPattern(), $action)) {
-      throw new RouteException("Invalid action: $action");
-    }
-
-    $this->action = $action;
-  }
-
-  /**
-   * getActionPattern
-   *
-   * Returns a regular expression pattern used to identify valid Action
-   * object names.  By default, it should be an object name in StudlyCaps
-   * (as per PSR-1) and, optionally, the namespace in which it resides.
-   *
-   * @return string
-   */
-  protected function getActionPattern (): string {
-    return '/^(?:(?:[A-Z][a-z]*)+\\\\)*(?:[A-Z][a-z]*)+$/';
-  }
-
-  /**
-   * setPrivate
-   *
-   * Sets the private property.
-   *
-   * @param bool $private
-   *
-   * @return void
-   */
-  public function setPrivate (bool $private): void {
-    $this->private = $private;
-  }
-
-  /**
-   * setActionParameter
-   *
-   * Sets the action parameter property.
-   *
-   * @param array $parameter
-   *
-   * @return void
-   */
-  public function setActionParameter (array $parameter): void {
-    $this->actionParameter = $parameter;
-  }
-
-  /**
-   * matchRoute
-   *
    * Returns true if this Route matches the one passed here as the
    * parameter to this method.
    *
@@ -195,13 +118,12 @@ class Route extends Repository implements RouteInterface {
    * @return bool
    * @throws RouteException
    */
-  public function matchRoute (RouteInterface $route): bool {
+  public function matchRoute(RouteInterface $route): bool
+  {
     return $this->getRouteData() === $route->getRouteData();
   }
-
+  
   /**
-   * getRouteData
-   *
    * Returns the full set of route information based on the values from
    * our properties.
    *
@@ -210,51 +132,38 @@ class Route extends Repository implements RouteInterface {
    * @return array
    * @throws RouteException
    */
-  public function getRouteData (array $order = ["method", "path", "action", "private"]): array {
-
-    // the only viable values in our $order argument are the names of
-    // our properties.  if we get anything else, we'll throw an exception.
-    // we intentionally leave off the actionParameter because it's not
-    // required and it's different from request to request.  if someone
-    // wants to use it, they can change the default $order array.
-
-    $valid = get_object_vars($this);
-    $difference = array_diff($order, $valid);
-    if (($count = sizeof($difference)) > 0) {
-      $noun = $count === 1 ? "property" : "properties";
-      $difference = join(", ", $difference);
-      throw new RouteException("Request for unknown $noun: $difference.");
-    }
-
-    $properties = [];
+  public function getRouteData(
+    array $order = ['path', 'action', 'method', 'private']
+  ): array {
+    $routeData = [];
     foreach ($order as $property) {
-
-      // since this method is also used in the __toString method below,
-      // we want everything to be printable.  any property that's a bool
-      // wouldn't always get printed, so we'll explicitly shift them to
-      // strings here.
-
-      $properties[] = is_bool($this->{$property})
-        ? ($this->{$property} ? '1' : '0')
-        : $this->{$property};
+      if ($this->isProperty($property) && $property !== 'actionParameter') {
+        
+        // since this method is also used in the __toString method below, we
+        // want everything to be printable.  false values get printed as empty
+        // strings, so we'll explicitly convert those to numeric values here
+        // so that false values become zeros instead of blanks.  note that we
+        // skip the actionParameter property so that we don't have to worry
+        // about the array here.
+        
+        $routeData[] = is_bool($this->$property)
+          ? (int) $this->$property
+          : $this->$property;
+      }
     }
-
-    return $properties;
+    
+    return $routeData;
   }
-
+  
   /**
-   * __toString
-   *
-   * Returns a string build from our route properties for display
-   * purposes.
+   * Returns a string build from our route properties for display purposes.
    *
    * @return string
    * @throws RouteException
    */
-  public function __toString (): string {
-    return vsprintf("%s (%s, %s, %s)", $this->getRouteData([
-      "path", "action", "method", "private",
-    ]));
+  public function __toString(): string
+  {
+    $routeData = $this->getRouteData();
+    return vsprintf('%s (%s, %s, %s)', $routeData);
   }
-
 }

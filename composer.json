@@ -3,11 +3,11 @@
   "description": "a PHP routing object",
   "minimum-stability": "stable",
   "type": "library",
+  "license": "MIT",
   "authors": [
     {
       "name": "David Dashifen Kees",
       "email": "dashifen@dashifen.com",
-      "homepage": "https://dashifen.com",
       "role": "developer"
     }
   ],
@@ -17,10 +17,14 @@
     }
   },
   "require": {
-    "php": ">=7.3",
-    "dashifen/request": "^1",
-    "dashifen/exception": "^1",
-    "dashifen/repository": "^1"
+    "php": ">=8.4",
+    "dashifen/case-changing-trait": "^1.0",
+    "dashifen/collection": "^2.1",
+    "dashifen/exception": "^1.0",
+    "dashifen/request": "^2.0"
   },
-  "license": "MIT"
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
+  }
 }
