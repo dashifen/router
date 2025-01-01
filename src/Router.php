@@ -2,6 +2,7 @@
 
 namespace Dashifen\Router;
 
+use Dashifen\Request\Request;
 use Dashifen\Router\Route\Route;
 use Dashifen\Request\RequestInterface;
 use Dashifen\Router\Route\RouteInterface;
@@ -19,15 +20,14 @@ class Router implements RouterInterface
   /**
    * Router constructor.
    *
-   * @param RequestInterface              $request
-   * @param bool                          $autoRouter
+   * @param RequestInterface|null         $request
    * @param RouteCollectionInterface|null $collection
    */
   public function __construct(
-    RequestInterface $request,
-    protected readonly bool $autoRouter = false,
-    protected ?RouteCollectionInterface $collection = null
+    protected ?RequestInterface $request = null,
+    protected ?RouteCollectionInterface $collection = null,
   ) {
+    $request ??= new Request();
     $this->path = $request->getServerVar("REQUEST_URI");
     $this->method = $request->getServerVar("REQUEST_METHOD");
   }
@@ -43,7 +43,7 @@ class Router implements RouterInterface
    */
   public function getRoute(): RouteInterface
   {
-    return !$this->autoRouter
+    return $this->collection !== null
       ? $this->getCollectedRoute()
       : $this->getAutoRoute();
   }
@@ -136,15 +136,11 @@ class Router implements RouterInterface
    * Returns the routes collected by this Router.
    *
    * @return array
-   * @throws RouterException
    */
   public function getRoutes(): array
   {
-    return !$this->autoRouter
+    return $this->collection !== null
       ? $this->collection->getCollection()
-      : throw new RouterException(
-        'Auto-routers don\'t collect routes.',
-        RouterException::UNEXPECTED_AUTOROUTER_ACTION
-      );
+      : [];
   }
 }

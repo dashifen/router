@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e5bb898886e5fbacaceaf6f83422cd7",
+    "content-hash": "5156f0d7333fe13b18ee4b62dcda23c8",
     "packages": [
         {
             "name": "dashifen/case-changing-trait",
@@ -133,16 +133,16 @@
         },
         {
             "name": "dashifen/request",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dashifen/request.git",
-                "reference": "074f99602bd9c160bdc81e609306499f68df905d"
+                "reference": "f60c4478cca803b0aef885ff6a005a4c7337549d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dashifen/request/zipball/074f99602bd9c160bdc81e609306499f68df905d",
-                "reference": "074f99602bd9c160bdc81e609306499f68df905d",
+                "url": "https://api.github.com/repos/dashifen/request/zipball/f60c4478cca803b0aef885ff6a005a4c7337549d",
+                "reference": "f60c4478cca803b0aef885ff6a005a4c7337549d",
                 "shasum": ""
             },
             "require": {
@@ -171,9 +171,9 @@
             "description": "a basic encapsulation of an http request from a visitor to a website",
             "support": {
                 "issues": "https://github.com/dashifen/request/issues",
-                "source": "https://github.com/dashifen/request/tree/2.0.0"
+                "source": "https://github.com/dashifen/request/tree/2.1.0"
             },
-            "time": "2024-12-30T22:06:33+00:00"
+            "time": "2025-01-01T20:26:53+00:00"
         },
         {
             "name": "dashifen/session",
