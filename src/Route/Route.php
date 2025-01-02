@@ -27,9 +27,6 @@ class Route implements RouteInterface
   
   protected(set) string $path {
     get {
-      if (!isset($this->path)) {
-        return '';
-      }
       
       // for convenience, we want our paths to begin with slashes and not end
       // with them.  this is simply our opinion as a default, if you don't like
