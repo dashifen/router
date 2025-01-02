@@ -107,16 +107,23 @@ class Router implements RouterInterface
     // for simplicity's sake, we're going to assume that a person will name
     // their action based on the final part of the URL path.  thus, a path
     // that looks like /foo/bar/login will use a Login action while one that
-    // looks like /foo/bar/process-login will use ProcessLogin.  if there's
-    // no hyphen in that final part of the path, we just capitalize its first
-    // letter and return it.  if it is hyphenated, then we have a method in the
-    // CaseChangingTrait that will convert kebab-case to PascalCase, and it'll
-    // do the work for us.
+    // looks like /foo/bar/process-login will use ProcessLogin.  i
     
     $debris = explode('/', $this->path);
-    return str_contains(($action = array_pop($debris)), '-')
+    $action = str_contains(($action = array_pop($debris)), '-')
+    
+      // if there's a hyphen in the last part of the path, then we'll use the
+      // CaseChangingTrait to convert it from kebab-case to PascalCase.
+      // otherwise, we can just capitalize the first letter.
+    
       ? $this->kebabToPascalCase($action)
       : ucfirst($action);
+    
+    // finally, if we have an empty action, we just return IndexAction and
+    // let the application using this router define what it does.  Otherwise,
+    // we append "Action" to the name we created above and return that.
+    
+    return empty($action) ? 'IndexAction' : $action . 'Action';
   }
   
   /**
