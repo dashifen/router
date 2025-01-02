@@ -2,6 +2,8 @@
 
 namespace Dashifen\Router\Route;
 
+use ReflectionClass;
+use ReflectionProperty;
 use Dashifen\Router\Action\ActionInterface;
 
 /**
@@ -16,7 +18,7 @@ class Route implements RouteInterface
       // method, then we throw a RouteException.  this pattern is repeated
       // below:  tenable values are set, but untenable ones cause an
       // exception.
-
+      
       $this->method = !in_array(($method = strtoupper($value)), ['GET', 'POST'])
         ? throw new RouteException("Unexpected method: $value.", RouteException::UNKNOWN_METHOD)
         : $method;
@@ -68,6 +70,8 @@ class Route implements RouteInterface
     set => $value;
   }
   
+  protected array $properties;
+  
   /**
    * Constructs a Route using $data which must map the names of the above
    * properties to the values we want them to have.
@@ -102,7 +106,21 @@ class Route implements RouteInterface
    */
   protected function isProperty(string $property): true
   {
-    if (!in_array($property, get_object_vars($this))) {
+    if (!isset($this->properties)) {
+      
+      // the first time we get here, the properties property will be unset.  to
+      // set it we create a reflection of this class and then extract its
+      // properties.  however, these will be ReflectionProperty objects; all we
+      // want are their names.  therefore, we use array_map to convert from the
+      // objects down to simple strings.
+      
+      $reflection = new ReflectionClass(static::class);
+      $reflectionProperties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+      $mapper = fn(ReflectionProperty $property) => $property->getName();
+      $this->properties = array_map($mapper, $reflectionProperties);
+    }
+    
+    if (!in_array($property, $this->properties)) {
       throw new RouteException(
         "Unknown property: $property.",
         RouteException::UNKNOWN_PROPERTY
