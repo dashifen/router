@@ -2,6 +2,8 @@
 
 namespace Dashifen\Router\Route;
 
+use Dashifen\Router\Action\ActionInterface;
+
 /**
  * Class Route
  */
@@ -49,9 +51,10 @@ class Route implements RouteInterface
       
       // actions are meant to be objects that perform whatever we want to
       // happen when a given route is requested.  therefore, our test here is
-      // to see if $value is an existing class or not.
+      // to see if $value is an existing class or not, and if it does exist,
+      // it must also implement the ActionInterface.
       
-      $this->action = !class_exists($value)
+      $this->action = !class_exists($value) && is_a($value, ActionInterface::class)
         ? throw new RouteException("Unknown action: $value", RouteException::UNKNOWN_ACTION)
         : $value;
     }
