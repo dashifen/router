@@ -14,8 +14,6 @@ class Router implements RouterInterface
 {
   use CaseChangingTrait;
   
-  protected string $path;
-  protected string $method;
   protected(set) RouteInterface $route {
     get {
       return $this->collection !== null
@@ -38,12 +36,14 @@ class Router implements RouterInterface
    * @param RouteCollectionInterface|null $collection
    */
   public function __construct(
-    protected ?RequestInterface $request = null,
     protected ?RouteCollectionInterface $collection = null,
+    protected ?RequestInterface $request = null,
   ) {
-    $request ??= new Request();
-    $this->path = $request->getServerVar("REQUEST_URI");
-    $this->method = $request->getServerVar("REQUEST_METHOD");
+    // the null state of the collection property determines if this is an
+    // auto-router or not.  so, if it's null, we leave that alone and assume
+    // that the developer knows what they're doing.
+    
+    $this->request ??= new Request();
   }
   
   /**
@@ -72,7 +72,11 @@ class Router implements RouterInterface
    */
   protected function getRouteIndex(): string
   {
-    return "($this->method) $this->path";
+    return sprintf(
+      '(%s) %s',
+      $this->request->getServerVar('REQUEST_METHOD'),
+      $this->request->getServerVar('REQUEST_URI')
+    );
   }
   
   /**
@@ -89,8 +93,8 @@ class Router implements RouterInterface
     // know what to do from there.
     
     return new Route([
-      'method'  => $this->method,
-      'path'    => $this->path,
+      'method'  => $this->request->getServerVar('REQUEST_METHOD'),
+      'path'    => $this->request->getServerVar('REQUEST_URI'),
       'action'  => $this->getAction(),
       'private' => $this->isRoutePrivate(),
     ]);
@@ -109,7 +113,7 @@ class Router implements RouterInterface
     // that looks like /foo/bar/login will use a Login action while one that
     // looks like /foo/bar/process-login will use ProcessLogin.  i
     
-    $debris = explode('/', $this->path);
+    $debris = explode('/', $this->request->getServerVar('REQUEST_URI'));
     $action = str_contains(($action = array_pop($debris)), '-')
     
       // if there's a hyphen in the last part of the path, then we'll use the
