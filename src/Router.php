@@ -37,7 +37,7 @@ class Router implements RouterInterface
    */
   public function __construct(
     protected ?RouteCollectionInterface $collection = null,
-    protected ?RequestInterface $request = null,
+    protected(set) ?RequestInterface $request = null,
   ) {
     // the null state of the collection property determines if this is an
     // auto-router or not.  so, if it's null, we leave that alone and assume
