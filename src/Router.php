@@ -41,7 +41,10 @@ class Router implements RouterInterface
   ) {
     // the null state of the collection property determines if this is an
     // auto-router or not.  so, if it's null, we leave that alone and assume
-    // that the developer knows what they're doing.
+    // that the developer knows what they're doing.  but, for the request, if
+    // it's null, we'll set it to our reasonable default which will read
+    // information based on the current HTTP request being processed which is
+    // very likely what we want anyway.
     
     $this->request ??= new Request();
   }
