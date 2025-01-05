@@ -118,7 +118,7 @@ class Router implements RouterInterface
     
     $debris = explode('/', $this->request->getServerVar('REQUEST_URI'));
     $action = str_contains(($action = array_pop($debris)), '-')
-    
+       
       // if there's a hyphen in the last part of the path, then we'll use the
       // CaseChangingTrait to convert it from kebab-case to PascalCase.
       // otherwise, we can just capitalize the first letter.
