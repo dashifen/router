@@ -104,25 +104,19 @@ class Router implements RouterInterface
    */
   protected function getAction(): string
   {
+    $debris = explode('/', $this->request->getServerVar('REQUEST_URI'));
+    
     // for simplicity's sake, we're going to assume that a person will name
     // their action based on the final part of the URL path.  thus, a path
-    // that looks like /foo/bar/login will use a Login action while one that
-    // looks like /foo/bar/process-login will use ProcessLogin.  i
+    // that looks like /foo/bar/login will use LoginAction while one that looks
+    // like /foo/bar/process-login will use ProcessLoginAction.  the use of
+    // strtok when assigning our $action variable makes sure that we remove the
+    // query string from our request before proceeding.
     
-    $debris = explode('/', $this->path);
-    $action = str_contains(($action = array_pop($debris)), '-')
-    
-      // if there's a hyphen in the last part of the path, then we'll use the
-      // CaseChangingTrait to convert it from kebab-case to PascalCase.
-      // otherwise, we can just capitalize the first letter.
-    
+    $action = str_contains($action = strtok(array_pop($debris), '?'), '-')
       ? $this->kebabToPascalCase($action)
       : ucfirst($action);
-    
-    // finally, if we have an empty action, we just return IndexAction and
-    // let the application using this router define what it does.  Otherwise,
-    // we append "Action" to the name we created above and return that.
-    
+      
     return empty($action) ? 'IndexAction' : $action . 'Action';
   }
   
