@@ -111,20 +111,36 @@ class Router implements RouterInterface
    */
   protected function getAction(): string
   {
-    $debris = explode('/', $this->request->getServerVar('REQUEST_URI'));
-    
     // for simplicity's sake, we're going to assume that a person will name
     // their action based on the final part of the URL path.  thus, a path
     // that looks like /foo/bar/login will use LoginAction while one that looks
-    // like /foo/bar/process-login will use ProcessLoginAction.  the use of
-    // strtok when assigning our $action variable makes sure that we remove the
-    // query string from our request before proceeding.
+    // like /foo/bar/process-login will use ProcessLoginAction.
     
-    $action = str_contains($action = strtok(array_pop($debris), '?'), '-')
+    $debris = explode('/', $this->getRequest());
+    $action = str_contains($action = array_pop($debris), '-')
       ? $this->kebabToPascalCase($action)
       : ucfirst($action);
       
     return empty($action) ? 'IndexAction' : $action . 'Action';
+  }
+  
+  /**
+   * Returns the requested URI without a querystring.
+   *
+   * @return string
+   */
+  protected function getRequest(): string
+  {
+    $requestUri = $this->request->getServerVar('REQUEST_URI');
+    
+    // if there isn't a question mark in the request URI, then strpos() returns
+    // false, and the result of the ternary statement is $requestUri unaltered.
+    // but, if there is one, it produces the substring of the URI up to but not
+    // including it.
+    
+    return ($position = strpos($requestUri, '?')) !== false
+      ? substr($requestUri, 0, $position)
+      : $requestUri;
   }
   
   /**
